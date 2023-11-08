@@ -2,6 +2,7 @@ import requests
 import urllib3
 import calendar
 import pandas as pd
+import matplotlib.pyplot as plt
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -73,14 +74,47 @@ def start_date_to_y_m_d_t(start_date):
 def converting_num_months_to_strings(df):
     # Swapping numeric 'month' with its corresponding name
     df['month'] = df['month'].apply(lambda x: calendar.month_name[x]) # converting numeric month to month names
-    
     # Defining the custom month order
     custom_month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-    
     # Converting the 'month' column to categorical with custom order
     df['month'] = pd.Categorical(df['month'], categories=custom_month_order, ordered=True)
-    
     return df
+
+def sorting_values_by_year(df):
+    df = df.sort_values("year")
+    return df
+
+# Converting metres to km
+def converting_metres_into_kms(df):
+    df['distance_km'] = df['distance'] / 1000 # Converting metres to km
+    df['distance_km'] = df['distance_km'].round() # Rounding the distances  
+    df.drop(columns=['distance'], inplace=True) # Dropping the original 'distance' column 
+    return df 
+
+# Removing 'total' from 'total_elevation_gain'
+def removing_total_from_total_elevation_gain(df):
+    target_column = 'total_elevation_gain'
+    new_column_name = target_column.replace('total_', '')
+    df.rename(columns={target_column: new_column_name}, inplace=True)
+    return df
+
+def creating_a_total_column(frequency_table):
+    frequency_table['total'] = frequency_table.sum(axis=1)
+    frequency_table.sort_values('total', inplace=True, ascending=False) # sorting the values in the total column
+    frequency_table.drop(columns=["total"], inplace=True) # the total column is not needed anymore 
+    return frequency_table 
+
+# Plotting a frequency table into a grouped bar chart 
+def plotting_table_into_grouped_bar_chart(frequency_table):
+    frequency_table.T.plot(kind='bar', stacked=True, figsize=(10,6))
+    plt.xlabel('Month')
+    plt.ylabel('Frequency')
+    plt.ylim(0, 20) # setting the y-axis limit
+    plt.title('My Sport Activity by Month') # setting a title 
+    plt.legend(title='Sport', bbox_to_anchor=(1.05, 1), loc='upper left') # adjusting the legend's position
+    plt.xticks(rotation=45) # choosing the rotation of the ticks labels 
+    plt.show # showing the plot 
+    return frequency_table
 
 def clean_up_df(df):
     df_copy = df.copy()
