@@ -5,8 +5,8 @@ Scraping data from my personal Strava account via the API they provide and creat
 - General Info
 - Setup
 - Usage
-- Project Status
-- Room for Improvement
+- Project Results 
+- Future Data Exploration Ideas
 - Acknowledgements
 - Contact
 
